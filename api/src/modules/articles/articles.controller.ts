@@ -6,6 +6,8 @@ import {
   Param,
   Delete,
   Put,
+  NotFoundException,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { ArticlesService } from './articles.service';
 import { Article } from 'src/core/entity/articles/article';
@@ -30,7 +32,18 @@ export class ArticlesController {
 
   @Get(':id')
   async findOne(@Param('id') id: number): Promise<Article> {
-    return this.articlesService.findOne(id);
+    try {
+      const article = await this.articlesService.findOne(id);
+
+      if (!article) {
+        throw new NotFoundException('Article not found');
+      }
+
+      return article;
+    } catch (error) {
+      if (error instanceof NotFoundException) throw error;
+      throw new InternalServerErrorException(error.message);
+    }
   }
 
   @Put(':id')
@@ -44,6 +57,17 @@ export class ArticlesController {
 
   @Delete(':id')
   async delete(@Param('id') id: number): Promise<Article> {
-    return this.articlesService.delete(id);
+    try {
+      const article = await this.articlesService.delete(id);
+
+      if (!article) {
+        throw new NotFoundException('Article not found');
+      }
+
+      return article;
+    } catch (error) {
+      if (error instanceof NotFoundException) throw error;
+      throw new InternalServerErrorException(error.message);
+    }
   }
 }
