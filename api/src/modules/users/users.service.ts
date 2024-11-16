@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 
-import { User } from 'src/core/entity/users/user';
 import { Role } from 'src/core/entity/permissions/role';
 import { PrismaService } from '../../infra/prisma/prisma.service';
+import { User } from './dtos/user.dto';
 
 @Injectable()
 export class UsersService {
@@ -79,6 +79,13 @@ export class UsersService {
   async delete(id: number): Promise<User> {
     return this.prisma.user.delete({
       where: { id: Number(id) },
+      select: this.select,
+    });
+  }
+
+  async findOneByEmail(email: string): Promise<User | null> {
+    return this.prisma.user.findUnique({
+      where: { email },
       select: this.select,
     });
   }
