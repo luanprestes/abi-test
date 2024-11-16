@@ -8,7 +8,7 @@ import {
   Put,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { User } from '@prisma/client';
+import { User } from 'src/core/entity/users/user';
 
 @Controller('users')
 export class UsersController {
@@ -40,8 +40,9 @@ export class UsersController {
     @Body('name') name: string,
     @Body('email') email: string,
     @Body('password') password: string,
+    @Body('permissionId') permissionId: number,
   ): Promise<User> {
-    return this.usersService.update(id, name, email, password);
+    return this.usersService.update(id, name, email, password, permissionId);
   }
 
   @Delete(':id')
