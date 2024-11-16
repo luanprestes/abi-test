@@ -8,7 +8,7 @@ import {
   Put,
 } from '@nestjs/common';
 import { ArticlesService } from './articles.service';
-import { Article } from '@prisma/client';
+import { Article } from 'src/core/entity/articles/article';
 
 @Controller('articles')
 export class ArticlesController {
