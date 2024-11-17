@@ -8,16 +8,19 @@ import {
   Put,
   NotFoundException,
   InternalServerErrorException,
+  UseGuards,
 } from '@nestjs/common';
 import { ArticlesService } from './articles.service';
-import { Article } from 'src/core/entity/articles/article';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 import { ArticleDocs } from './dtos/docs.dto';
+import { Article } from './dtos/article.dto';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('articles')
 export class ArticlesController {
   constructor(private readonly articlesService: ArticlesService) {}
 
+  /* Documentation */
   @ApiOperation({ summary: 'Create a new article' })
   @ApiBody({
     description: 'Article data',
@@ -28,8 +31,14 @@ export class ArticlesController {
     description: 'Article successfully created',
     type: [ArticleDocs],
   })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized: Invalid or missing JWT token',
+  })
   @ApiResponse({ status: 500, description: 'Internal server error' })
+  /* HTTP */
   @Post()
+  @UseGuards(AuthGuard)
   async create(
     @Body('title') title: string,
     @Body('content') content: string,
@@ -38,17 +47,25 @@ export class ArticlesController {
     return this.articlesService.create(title, content, creatorId);
   }
 
+  /* Documentation */
   @ApiOperation({ summary: 'Get all articles' })
   @ApiResponse({
     status: 200,
     description: 'Successfully retrieved all articles',
     type: [ArticleDocs],
   })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized: Invalid or missing JWT token',
+  })
+  /* HTTP */
   @Get()
+  @UseGuards(AuthGuard)
   async findAll(): Promise<Article[]> {
     return this.articlesService.findAll();
   }
 
+  /* Documentation */
   @ApiOperation({ summary: 'Get article by ID' })
   @ApiParam({ name: 'id', type: 'number', description: 'Article ID' })
   @ApiResponse({
@@ -56,9 +73,15 @@ export class ArticlesController {
     description: 'Article found',
     type: [ArticleDocs],
   })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized: Invalid or missing JWT token',
+  })
   @ApiResponse({ status: 404, description: 'Article not found' })
   @ApiResponse({ status: 500, description: 'Internal server error' })
+  /* HTTP */
   @Get(':id')
+  @UseGuards(AuthGuard)
   async findOne(@Param('id') id: number): Promise<Article> {
     try {
       const article = await this.articlesService.findOne(id);
@@ -74,6 +97,7 @@ export class ArticlesController {
     }
   }
 
+  /* Documentation */
   @ApiOperation({ summary: 'Update an article by ID' })
   @ApiParam({ name: 'id', type: 'number', description: 'Article ID' })
   @ApiBody({
@@ -85,9 +109,15 @@ export class ArticlesController {
     description: 'Article updated',
     type: [ArticleDocs],
   })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized: Invalid or missing JWT token',
+  })
   @ApiResponse({ status: 404, description: 'Article not found' })
   @ApiResponse({ status: 500, description: 'Internal server error' })
+  /* HTTP */
   @Put(':id')
+  @UseGuards(AuthGuard)
   async update(
     @Param('id') id: number,
     @Body('title') title: string,
@@ -96,6 +126,7 @@ export class ArticlesController {
     return this.articlesService.update(id, title, content);
   }
 
+  /* Documentation */
   @ApiOperation({ summary: 'Delete an article by ID' })
   @ApiParam({ name: 'id', type: 'number', description: 'Article ID' })
   @ApiResponse({
@@ -103,9 +134,15 @@ export class ArticlesController {
     description: 'Article deleted',
     type: [ArticleDocs],
   })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized: Invalid or missing JWT token',
+  })
   @ApiResponse({ status: 404, description: 'Article not found' })
   @ApiResponse({ status: 500, description: 'Internal server error' })
+  /* HTTP */
   @Delete(':id')
+  @UseGuards(AuthGuard)
   async delete(@Param('id') id: number): Promise<Article> {
     try {
       const article = await this.articlesService.delete(id);

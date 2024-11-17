@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../infra/prisma/prisma.service';
-import { Article } from 'src/core/entity/articles/article';
+import { Article } from './dtos/article.dto';
 
 @Injectable()
 export class ArticlesService {

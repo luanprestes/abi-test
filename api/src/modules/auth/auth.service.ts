@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UsersService } from '../users/users.service';
-import { UserEntity } from 'src/core/entity/users/user';
+import { UserEntity } from 'src/core/entities/users/user';
 import * as bcrypt from 'bcryptjs';
+import { PrismaService } from 'src/infra/prisma/prisma.service';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private usersService: UsersService,
     private jwtService: JwtService,
+    private prisma: PrismaService,
   ) {}
 
   async login(user: UserEntity) {
@@ -20,12 +20,24 @@ export class AuthService {
   }
 
   async validateUser(email: string, password: string): Promise<any> {
-    const user = (await this.usersService.findOneByEmail(email)) as UserEntity;
+    const user = (await this.prisma.user.findUnique({
+      where: { email },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        password: true,
+        permission: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    })) as UserEntity;
 
     if (user && bcrypt.compareSync(password, user.password)) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { password, ...result } = user;
-      return result;
+      delete user.password;
+      return user;
     }
     return null;
   }
