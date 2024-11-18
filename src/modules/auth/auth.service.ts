@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserEntity } from 'src/core/entities/users/user';
 import * as bcrypt from 'bcryptjs';
-import { PrismaService } from 'src/infra/prisma/prisma.service';
+import { PrismaService } from 'src/modules/infra/prisma/prisma.service';
 
 @Injectable()
 export class AuthService {
@@ -12,7 +12,11 @@ export class AuthService {
   ) {}
 
   async login(user: UserEntity) {
-    const payload = { username: user.email, sub: user.id };
+    const payload = {
+      email: user.email,
+      sub: user.id,
+      permission: user.permission.id,
+    };
 
     return {
       access_token: this.jwtService.sign(payload),
@@ -30,6 +34,7 @@ export class AuthService {
         permission: {
           select: {
             name: true,
+            id: true,
           },
         },
       },

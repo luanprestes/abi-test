@@ -14,8 +14,6 @@ export class AuthController {
     @Body('email') email: string,
     @Body('password') password: string,
   ) {
-    console.log(email);
-    console.log(password);
     const user = await this.authService.validateUser(email, password);
 
     if (!user) {

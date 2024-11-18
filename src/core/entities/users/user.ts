@@ -5,5 +5,6 @@ export type UserEntity = {
   password: string;
   permission: {
     name: string;
+    id: number;
   };
 };

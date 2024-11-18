@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 
 import { Role } from 'src/core/entities/permissions/role';
-import { PrismaService } from '../../infra/prisma/prisma.service';
+import { PrismaService } from '../infra/prisma/prisma.service';
 import { User } from './dtos/user.dto';
 
 @Injectable()
@@ -16,6 +16,7 @@ export class UsersService {
     permission: {
       select: {
         name: true,
+        id: true,
       },
     },
   };
