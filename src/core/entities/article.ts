@@ -1,4 +1,4 @@
-import { UserEntity } from '../users/user';
+import { UserEntity } from './user';
 
 export type Article = {
   id: number;

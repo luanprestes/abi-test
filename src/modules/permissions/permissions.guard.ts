@@ -8,7 +8,7 @@ import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
 import { PermissionsService } from './permissions.service';
 import { PERMISSIONS_KEY } from './permissions.decorator';
-import { Role } from 'src/core/entities/permissions/role';
+import { Role } from 'src/core/entities/role';
 
 @Injectable()
 export class PermissionsGuard implements CanActivate {

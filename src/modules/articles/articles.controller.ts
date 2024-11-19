@@ -16,7 +16,7 @@ import { ArticleDocs } from './dtos/docs.dto';
 import { Article } from './dtos/article.dto';
 import { AuthGuard } from '../auth/auth.guard';
 import { Permissions } from '../permissions/permissions.decorator';
-import { Role } from 'src/core/entities/permissions/role';
+import { Role } from 'src/core/entities/role';
 import { PermissionsGuard } from '../permissions/permissions.guard';
 
 @Controller('articles')

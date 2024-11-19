@@ -17,7 +17,7 @@ import { UsersService } from './users.service';
 import { User } from './dtos/user.dto';
 import { AuthGuard } from '../auth/auth.guard';
 import { Permissions } from '../permissions/permissions.decorator';
-import { Role } from 'src/core/entities/permissions/role';
+import { Role } from 'src/core/entities/role';
 import { PermissionsGuard } from '../permissions/permissions.guard';
 
 @Controller('users')

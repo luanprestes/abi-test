@@ -1,4 +1,4 @@
-import { Role } from '../entities/permissions/role';
+import { Role } from '../entities/role';
 
 export interface IUsersRepository<T> {
   create(

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Role } from 'src/core/entities/permissions/role';
+import { Role } from 'src/core/entities/role';
 import { User } from './dtos/user.dto';
 import { UsersRepository } from './users.repository';
 import { PasswordsService } from '../passwords/passwords.service';
