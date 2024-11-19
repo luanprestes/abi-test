@@ -5,4 +5,5 @@ export type User = {
   permission: {
     name: string;
   };
+  password?: string;
 };

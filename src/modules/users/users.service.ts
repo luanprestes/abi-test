@@ -22,7 +22,7 @@ export class UsersService {
   }
 
   async findAll(): Promise<User[]> {
-    return this.findAll();
+    return this.repository.findAll();
   }
 
   async findOne(id: number): Promise<User | null> {
