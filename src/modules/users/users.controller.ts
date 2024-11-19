@@ -16,12 +16,17 @@ import { UserDocs } from './dtos/docs.dto';
 import { UsersService } from './users.service';
 import { User } from './dtos/user.dto';
 import { AuthGuard } from '../auth/auth.guard';
+import { Permissions } from '../permissions/permissions.decorator';
+import { Role } from 'src/core/entities/permissions/role';
+import { PermissionsGuard } from '../permissions/permissions.guard';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  /* Documentation */
+  /* 
+    Documentation 
+  */
   @ApiOperation({ summary: 'Create a new user' })
   @ApiBody({
     description: 'User data to create',
@@ -37,9 +42,12 @@ export class UsersController {
     description: 'Unauthorized: Invalid or missing JWT token',
   })
   @ApiResponse({ status: 500, description: 'Internal server error' })
-  /* HTTP */
+  /* 
+    HTTP 
+  */
   @Post()
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, PermissionsGuard)
+  @Permissions(Role.ADMIN)
   async create(
     @Body('name') name: string,
     @Body('email') email: string,
@@ -49,7 +57,9 @@ export class UsersController {
     return this.usersService.create(name, email, password, permissionId);
   }
 
-  /* Documentation */
+  /* 
+    Documentation 
+  */
   @ApiOperation({ summary: 'Get all users' })
   @ApiResponse({
     status: 200,
@@ -60,14 +70,19 @@ export class UsersController {
     status: 401,
     description: 'Unauthorized: Invalid or missing JWT token',
   })
-  /* HTTP */
+  /* 
+    HTTP 
+  */
   @Get()
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, PermissionsGuard)
+  @Permissions(Role.ADMIN)
   async findAll(): Promise<User[]> {
     return this.usersService.findAll();
   }
 
-  /* Documentation */
+  /* 
+    Documentation 
+  */
   @ApiOperation({ summary: 'Get user by ID' })
   @ApiParam({ name: 'id', type: 'number', description: 'User ID' })
   @ApiResponse({ status: 200, description: 'User found', type: [UserDocs] })
@@ -77,9 +92,12 @@ export class UsersController {
   })
   @ApiResponse({ status: 404, description: 'User not found' })
   @ApiResponse({ status: 500, description: 'Internal server error' })
-  /* HTTP */
+  /* 
+    HTTP 
+  */
   @Get(':id')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, PermissionsGuard)
+  @Permissions(Role.ADMIN)
   async findOne(@Param('id') id: number): Promise<User> {
     try {
       const user = await this.usersService.findOne(id);
@@ -95,7 +113,9 @@ export class UsersController {
     }
   }
 
-  /* Documentation */
+  /* 
+    Documentation 
+  */
   @ApiOperation({ summary: 'Update a user by ID' })
   @ApiParam({ name: 'id', type: 'number', description: 'User ID' })
   @ApiBody({
@@ -109,9 +129,12 @@ export class UsersController {
   })
   @ApiResponse({ status: 404, description: 'User not found' })
   @ApiResponse({ status: 500, description: 'Internal server error' })
-  /* HTTP */
+  /* 
+    HTTP 
+  */
   @Put(':id')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, PermissionsGuard)
+  @Permissions(Role.ADMIN)
   async update(
     @Param('id') id: number,
     @Body('name') name: string,
@@ -122,7 +145,9 @@ export class UsersController {
     return this.usersService.update(id, name, email, password, permissionId);
   }
 
-  /* Documentation */
+  /* 
+    Documentation 
+  */
   @ApiOperation({ summary: 'Delete a user by ID' })
   @ApiParam({ name: 'id', type: 'number', description: 'User ID' })
   @ApiResponse({ status: 200, description: 'User deleted', type: [UserDocs] })
@@ -132,9 +157,12 @@ export class UsersController {
   })
   @ApiResponse({ status: 404, description: 'User not found' })
   @ApiResponse({ status: 500, description: 'Internal server error' })
-  /* HTTP */
+  /* 
+    HTTP 
+  */
   @Delete(':id')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, PermissionsGuard)
+  @Permissions(Role.ADMIN)
   async delete(@Param('id') id: number): Promise<User> {
     try {
       const user = await this.usersService.delete(id);

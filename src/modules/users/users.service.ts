@@ -1,29 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import * as bcrypt from 'bcryptjs';
-
 import { Role } from 'src/core/entities/permissions/role';
-import { PrismaService } from '../infra/prisma/prisma.service';
 import { User } from './dtos/user.dto';
+import { UsersRepository } from './users.repository';
+import { PasswordsService } from '../passwords/passwords.service';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
-
-  select = {
-    id: true,
-    name: true,
-    email: true,
-    permission: {
-      select: {
-        name: true,
-        id: true,
-      },
-    },
-  };
-
-  async generatePassword(password: string): Promise<string> {
-    return await bcrypt.hash(password, 10);
-  }
+  constructor(
+    private repository: UsersRepository,
+    private passwords: PasswordsService,
+  ) {}
 
   async create(
     name: string,
@@ -31,29 +17,16 @@ export class UsersService {
     password: string,
     permissionId: Role,
   ): Promise<User> {
-    const hashedPassword = await this.generatePassword(password);
-    return this.prisma.user.create({
-      data: {
-        name,
-        email,
-        password: hashedPassword,
-        permissionId,
-      },
-      select: this.select,
-    });
+    const hashedPassword = await this.passwords.generatePassword(password);
+    return this.repository.create(name, email, hashedPassword, permissionId);
   }
 
   async findAll(): Promise<User[]> {
-    return this.prisma.user.findMany({
-      select: this.select,
-    });
+    return this.findAll();
   }
 
   async findOne(id: number): Promise<User | null> {
-    return this.prisma.user.findUnique({
-      where: { id: Number(id) },
-      select: this.select,
-    });
+    return this.repository.findOne(id);
   }
 
   async update(
@@ -63,24 +36,18 @@ export class UsersService {
     password: string,
     permissionId: Role,
   ): Promise<User> {
-    const hashedPassword = await this.generatePassword(password);
+    const hashedPassword = await this.passwords.generatePassword(password);
 
-    return this.prisma.user.update({
-      where: { id: Number(id) },
-      data: {
-        name,
-        email,
-        password: hashedPassword,
-        permissionId,
-      },
-      select: this.select,
-    });
+    return this.repository.update(
+      id,
+      name,
+      email,
+      hashedPassword,
+      permissionId,
+    );
   }
 
   async delete(id: number): Promise<User> {
-    return this.prisma.user.delete({
-      where: { id: Number(id) },
-      select: this.select,
-    });
+    return this.repository.delete(id);
   }
 }

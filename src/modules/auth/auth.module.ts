@@ -10,7 +10,7 @@ import { PrismaModule } from 'src/modules/infra/prisma/prisma.module';
     JwtModule.register({
       global: true,
       secret: process.env.JWT_SECRET_KEY || 'secretKey',
-      signOptions: { expiresIn: '60s' },
+      signOptions: { expiresIn: '1800s' },
     }),
     PrismaModule,
   ],

@@ -15,12 +15,17 @@ import { ApiBody, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 import { ArticleDocs } from './dtos/docs.dto';
 import { Article } from './dtos/article.dto';
 import { AuthGuard } from '../auth/auth.guard';
+import { Permissions } from '../permissions/permissions.decorator';
+import { Role } from 'src/core/entities/permissions/role';
+import { PermissionsGuard } from '../permissions/permissions.guard';
 
 @Controller('articles')
 export class ArticlesController {
   constructor(private readonly articlesService: ArticlesService) {}
 
-  /* Documentation */
+  /* 
+    Documentation 
+  */
   @ApiOperation({ summary: 'Create a new article' })
   @ApiBody({
     description: 'Article data',
@@ -36,9 +41,12 @@ export class ArticlesController {
     description: 'Unauthorized: Invalid or missing JWT token',
   })
   @ApiResponse({ status: 500, description: 'Internal server error' })
-  /* HTTP */
+  /* 
+    HTTP 
+  */
   @Post()
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, PermissionsGuard)
+  @Permissions(Role.EDITOR)
   async create(
     @Body('title') title: string,
     @Body('content') content: string,
@@ -47,7 +55,9 @@ export class ArticlesController {
     return this.articlesService.create(title, content, creatorId);
   }
 
-  /* Documentation */
+  /* 
+    Documentation 
+  */
   @ApiOperation({ summary: 'Get all articles' })
   @ApiResponse({
     status: 200,
@@ -58,14 +68,19 @@ export class ArticlesController {
     status: 401,
     description: 'Unauthorized: Invalid or missing JWT token',
   })
-  /* HTTP */
+  /* 
+    HTTP 
+  */
   @Get()
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, PermissionsGuard)
+  @Permissions(Role.READER)
   async findAll(): Promise<Article[]> {
     return this.articlesService.findAll();
   }
 
-  /* Documentation */
+  /* 
+    Documentation 
+  */
   @ApiOperation({ summary: 'Get article by ID' })
   @ApiParam({ name: 'id', type: 'number', description: 'Article ID' })
   @ApiResponse({
@@ -79,9 +94,12 @@ export class ArticlesController {
   })
   @ApiResponse({ status: 404, description: 'Article not found' })
   @ApiResponse({ status: 500, description: 'Internal server error' })
-  /* HTTP */
+  /* 
+    HTTP 
+  */
   @Get(':id')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, PermissionsGuard)
+  @Permissions(Role.READER)
   async findOne(@Param('id') id: number): Promise<Article> {
     try {
       const article = await this.articlesService.findOne(id);
@@ -97,7 +115,9 @@ export class ArticlesController {
     }
   }
 
-  /* Documentation */
+  /* 
+    Documentation 
+  */
   @ApiOperation({ summary: 'Update an article by ID' })
   @ApiParam({ name: 'id', type: 'number', description: 'Article ID' })
   @ApiBody({
@@ -115,18 +135,35 @@ export class ArticlesController {
   })
   @ApiResponse({ status: 404, description: 'Article not found' })
   @ApiResponse({ status: 500, description: 'Internal server error' })
-  /* HTTP */
+  /* 
+    HTTP 
+  */
   @Put(':id')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, PermissionsGuard)
+  @Permissions(Role.EDITOR)
   async update(
     @Param('id') id: number,
     @Body('title') title: string,
     @Body('content') content: string,
   ): Promise<Article> {
-    return this.articlesService.update(id, title, content);
+    try {
+      let article = await this.articlesService.findOne(id);
+
+      if (!article) {
+        throw new NotFoundException('Article not found');
+      }
+
+      article = await this.articlesService.update(id, title, content);
+      return article;
+    } catch (error) {
+      if (error instanceof NotFoundException) throw error;
+      throw new InternalServerErrorException(error.message);
+    }
   }
 
-  /* Documentation */
+  /* 
+    Documentation 
+  */
   @ApiOperation({ summary: 'Delete an article by ID' })
   @ApiParam({ name: 'id', type: 'number', description: 'Article ID' })
   @ApiResponse({
@@ -140,9 +177,12 @@ export class ArticlesController {
   })
   @ApiResponse({ status: 404, description: 'Article not found' })
   @ApiResponse({ status: 500, description: 'Internal server error' })
-  /* HTTP */
+  /* 
+    HTTP 
+  */
   @Delete(':id')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, PermissionsGuard)
+  @Permissions(Role.EDITOR)
   async delete(@Param('id') id: number): Promise<Article> {
     try {
       const article = await this.articlesService.delete(id);

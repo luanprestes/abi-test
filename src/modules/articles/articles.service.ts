@@ -1,72 +1,32 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../infra/prisma/prisma.service';
 import { Article } from './dtos/article.dto';
+import { ArticlesRepository } from './articles.repository';
 
 @Injectable()
 export class ArticlesService {
-  constructor(private prisma: PrismaService) {}
-
-  select = {
-    id: true,
-    title: true,
-    content: true,
-    creator: {
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        permission: {
-          select: {
-            name: true,
-          },
-        },
-      },
-    },
-  };
+  constructor(private repository: ArticlesRepository) {}
 
   async create(
     title: string,
     content: string,
     creatorId: number,
   ): Promise<Article> {
-    return this.prisma.article.create({
-      data: {
-        title,
-        content,
-        creatorId,
-      },
-      select: this.select,
-    });
+    return this.repository.create(title, content, creatorId);
   }
 
   async findAll(): Promise<Article[]> {
-    return this.prisma.article.findMany({
-      select: this.select,
-    });
+    return this.repository.findAll();
   }
 
   async findOne(id: number): Promise<Article | null> {
-    return this.prisma.article.findUnique({
-      where: { id: Number(id) },
-      select: this.select,
-    });
+    return this.repository.findOne(id);
   }
 
   async update(id: number, title: string, content: string): Promise<Article> {
-    return this.prisma.article.update({
-      where: { id: Number(id) },
-      data: {
-        title,
-        content,
-      },
-      select: this.select,
-    });
+    return this.repository.update(id, title, content);
   }
 
   async delete(id: number): Promise<Article> {
-    return this.prisma.article.delete({
-      where: { id: Number(id) },
-      select: this.select,
-    });
+    return this.repository.delete(id);
   }
 }

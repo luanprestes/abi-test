@@ -8,7 +8,9 @@ export class AuthController {
 
   @ApiOperation({ summary: 'Login to get JWT token' })
   @ApiResponse({ status: 200, description: 'Successfully logged in' })
-  /* HTTP */
+  /* 
+    HTTP 
+  */
   @Post('login')
   async login(
     @Body('email') email: string,
