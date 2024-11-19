@@ -22,7 +22,14 @@ export class ArticlesService {
     return this.repository.findOne(id);
   }
 
-  async update(id: number, title: string, content: string): Promise<Article> {
+  async update(
+    id: number,
+    title: string,
+    content: string,
+  ): Promise<Article | null> {
+    const article = this.repository.findOne(id);
+    if (!article) return null;
+
     return this.repository.update(id, title, content);
   }
 

@@ -147,13 +147,12 @@ export class ArticlesController {
     @Body('content') content: string,
   ): Promise<Article> {
     try {
-      let article = await this.articlesService.findOne(id);
+      const article = await this.articlesService.update(id, title, content);
 
       if (!article) {
         throw new NotFoundException('Article not found');
       }
 
-      article = await this.articlesService.update(id, title, content);
       return article;
     } catch (error) {
       if (error instanceof NotFoundException) throw error;
