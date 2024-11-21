@@ -68,4 +68,8 @@ export class UsersRepositoryMock {
     const [deletedUser] = this.users.splice(index, 1);
     return deletedUser;
   }
+
+  async findByEmail(email: string): Promise<User | null> {
+    return this.users.find((user) => user.email === email);
+  }
 }

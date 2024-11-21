@@ -4,12 +4,9 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN mkdir infra
-RUN yarn install
-
 COPY . .
 
-RUN npx prisma generate
+RUN rm -rf infra && mkdir infra
 
 EXPOSE 3000
 

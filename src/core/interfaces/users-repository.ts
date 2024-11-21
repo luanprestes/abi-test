@@ -17,4 +17,5 @@ export interface IUsersRepository<T> {
     permissionId: Role,
   ): Promise<T>;
   delete(id: number): Promise<T>;
+  findByEmail(email: string): Promise<T>;
 }

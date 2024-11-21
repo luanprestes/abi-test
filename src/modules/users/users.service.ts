@@ -17,6 +17,9 @@ export class UsersService {
     password: string,
     permissionId: Role,
   ): Promise<User> {
+    const emailExists = await this.repository.findByEmail(email);
+    if (emailExists) return null;
+
     const hashedPassword = await this.passwords.generatePassword(password);
     return this.repository.create(name, email, hashedPassword, permissionId);
   }
@@ -36,7 +39,10 @@ export class UsersService {
     password: string,
     permissionId: Role,
   ): Promise<User> {
-    const hashedPassword = await this.passwords.generatePassword(password);
+    let hashedPassword = null;
+    if (password) {
+      hashedPassword = await this.passwords.generatePassword(password);
+    }
 
     return this.repository.update(
       id,

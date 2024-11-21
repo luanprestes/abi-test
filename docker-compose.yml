@@ -3,16 +3,17 @@ version: '3.8'
 services:
 
   db:
-    image: postgres:13
-    container_name: postgres-db
+    image: mysql:8
+    container_name: mysql-db
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: mydatabase
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: abi
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
     ports:
-      - "5432:5432"
+      - "3306:3306" 
     volumes:
-      - ./infra:/var/lib/postgresql/data
+      - ./infra:/var/lib/mysql
 
   app:
     build:
@@ -22,7 +23,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - DATABASE_URL=postgresql://user:password@db:5432/mydatabase?schema=public
+      - DATABASE_URL=mysql://root:rootpassword@db:3306/abi
     volumes:
       - .:/app
     depends_on:

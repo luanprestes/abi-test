@@ -52,19 +52,26 @@ export class UsersRepository implements IUsersRepository<User> {
 
   async update(
     id: number,
-    name: string,
-    email: string,
-    password: string,
-    permissionId: Role,
+    name?: string,
+    email?: string,
+    password?: string,
+    permissionId?: Role,
   ): Promise<User> {
+    const newDataUser: {
+      name?: string;
+      email?: string;
+      password?: string;
+      permissionId?: Role;
+    } = {};
+
+    if (name) newDataUser.name = name;
+    if (email) newDataUser.email = email;
+    if (password) newDataUser.password = password;
+    if (permissionId) newDataUser.permissionId = permissionId;
+
     return this.prisma.user.update({
       where: { id: Number(id) },
-      data: {
-        name,
-        email,
-        password,
-        permissionId,
-      },
+      data: newDataUser,
       select: this.select,
     });
   }
@@ -72,6 +79,13 @@ export class UsersRepository implements IUsersRepository<User> {
   async delete(id: number): Promise<User> {
     return this.prisma.user.delete({
       where: { id: Number(id) },
+      select: this.select,
+    });
+  }
+
+  async findByEmail(email: string): Promise<User> {
+    return this.prisma.user.findUnique({
+      where: { email: email },
       select: this.select,
     });
   }

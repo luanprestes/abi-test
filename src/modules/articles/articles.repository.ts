@@ -53,13 +53,18 @@ export class ArticlesRepository implements IArticlesRepository<Article> {
     });
   }
 
-  async update(id: number, title: string, content: string): Promise<Article> {
+  async update(id: number, title?: string, content?: string): Promise<Article> {
+    const newDataArticle: {
+      title?: string;
+      content?: string;
+    } = {};
+
+    if (title) newDataArticle.title = title;
+    if (content) newDataArticle.content = content;
+
     return this.prisma.article.update({
       where: { id: Number(id) },
-      data: {
-        title,
-        content,
-      },
+      data: newDataArticle,
       select: this.select,
     });
   }

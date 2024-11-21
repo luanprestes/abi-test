@@ -9,6 +9,7 @@ import {
   NotFoundException,
   InternalServerErrorException,
   UseGuards,
+  BadRequestException,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiParam, ApiBody } from '@nestjs/swagger';
 
@@ -54,7 +55,16 @@ export class UsersController {
     @Body('password') password: string,
     @Body('permissionId') permissionId: number,
   ): Promise<User> {
-    return this.usersService.create(name, email, password, permissionId);
+    const user = await this.usersService.create(
+      name,
+      email,
+      password,
+      permissionId,
+    );
+
+    if (user) return user;
+
+    throw new BadRequestException('Email is already in use');
   }
 
   /* 
@@ -137,10 +147,10 @@ export class UsersController {
   @Permissions(Role.ADMIN)
   async update(
     @Param('id') id: number,
-    @Body('name') name: string,
-    @Body('email') email: string,
-    @Body('password') password: string,
-    @Body('permissionId') permissionId: number,
+    @Body('name') name?: string,
+    @Body('email') email?: string,
+    @Body('password') password?: string,
+    @Body('permissionId') permissionId?: number,
   ): Promise<User> {
     return this.usersService.update(id, name, email, password, permissionId);
   }
